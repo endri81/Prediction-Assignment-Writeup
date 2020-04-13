@@ -1,0 +1,627 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  10pt,
+  a4paper]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{Arial}
+  \setmonofont[]{DejaVu Sans Mono}
+  \setmathfont[]{LiberationMono}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Prediction Assignment Writeup},
+  pdfauthor={Endri Raco},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\title{Prediction Assignment Writeup}
+\author{Endri Raco}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\hypertarget{executive-summary}{%
+\subsection{Executive Summary}\label{executive-summary}}
+
+~
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now
+possible to collect a large amount of data about personal activity
+relatively inexpensively. These type of devices are part of the
+quantified self movement -- a group of enthusiasts who take measurements
+about themselves regularly to improve their health, to find patterns in
+their behavior, or because they are tech geeks. One thing that people
+regularly do is quantify how much of a particular activity they do, but
+they rarely quantify how well they do it. In this project, your goal
+will be to use data from accelerometers on the belt, forearm, arm, and
+dumbell of 6 participants. They were asked to perform barbell lifts
+correctly and incorrectly in 5 different ways. More information is
+available from the website here:
+\url{http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har}
+(see the section on the Weight Lifting Exercise Dataset). Project aims
+to quantify how well participants do particular activities. We will use
+data from accelerometers on the belt, forearm, arm, and dumbell of 6
+participants. This is the ``classe'' variable in the training set.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(}\StringTok{"Operating System:"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "Operating System:"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{version}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+               _                           
+platform       x86_64-w64-mingw32          
+arch           x86_64                      
+os             mingw32                     
+system         x86_64, mingw32             
+status                                     
+major          3                           
+minor          6.3                         
+year           2020                        
+month          02                          
+day            29                          
+svn rev        77875                       
+language       R                           
+version.string R version 3.6.3 (2020-02-29)
+nickname       Holding the Windsock        
+\end{verbatim}
+
+~
+
+\hypertarget{importing-data}{%
+\subsection{Importing data}\label{importing-data}}
+
+~
+
+Let's start by checking if needed R packages for this project are
+installed. If not, code below will install them.
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# required packages for our project}
+\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(kableExtra)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{'kableExtra'}\NormalTok{, }
+\DataTypeTok{repos =} \StringTok{'http://cran.us.r-project.org'}\NormalTok{)}
+\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(tidyverse)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{'tidyverse'}\NormalTok{, }
+\DataTypeTok{repos =} \StringTok{'http://cran.us.r-project.org'}\NormalTok{)}
+\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(caret)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{'caret'}\NormalTok{, }
+\DataTypeTok{repos =} \StringTok{'http://cran.us.r-project.org'}\NormalTok{)}
+\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(corrplot)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{'corrplot'}\NormalTok{, }
+\DataTypeTok{repos =} \StringTok{'http://cran.us.r-project.org'}\NormalTok{)}
+\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(randomForest)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{'randomForest'}\NormalTok{, }
+\DataTypeTok{repos =} \StringTok{'http://cran.us.r-project.org'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+~
+
+Now we are ready for data downloading:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Links saved in objects:}
+\NormalTok{train_link <-}\StringTok{ "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"}
+\NormalTok{test_link <-}\StringTok{ "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"}
+\end{Highlighting}
+\end{Shaded}
+
+~
+
+Now let's load our working data
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load data}
+\NormalTok{train_data <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\KeywordTok{url}\NormalTok{(train_link),  }\DataTypeTok{na.strings=}\KeywordTok{c}\NormalTok{(}\StringTok{"NA"}\NormalTok{,}\StringTok{"#DIV/0!"}\NormalTok{,}\StringTok{""}\NormalTok{))}
+\NormalTok{test_data  <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\KeywordTok{url}\NormalTok{(test_link),  }\DataTypeTok{na.strings=}\KeywordTok{c}\NormalTok{(}\StringTok{"NA"}\NormalTok{,}\StringTok{"#DIV/0!"}\NormalTok{,}\StringTok{""}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+~
+
+\hypertarget{split-data}{%
+\subsection{Split data}\label{split-data}}
+
+When developing an algorithm, we usually have a dataset for which we
+know the outcomes. Therefore, to mimic the ultimate evaluation process,
+we typically split the data into two parts and act as if we don't know
+the outcome for one of these.
+
+We stop pretending we don't know the outcome to evaluate the algorithm,
+but only after we are done constructing it. We refer to the group for
+which we know the outcome, and use to develop the algorithm, as the
+training set.
+
+We refer to the group for which we pretend we don't know the outcome as
+the test set.
+
+A standard way of generating the training and test sets is by randomly
+splitting the data. The caret package includes the function
+\textbf{createDataPartition} that helps us generates indexes for
+randomly splitting the data into training and test sets:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Generate indexes for randomly splitting data}
+\CommentTok{# Validation set will be 30% of train_data}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DataTypeTok{sample.kind=}\StringTok{'Rounding'}\NormalTok{)}
+\NormalTok{train_index  <-}\StringTok{ }\KeywordTok{createDataPartition}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ train_data}\OperatorTok{$}\NormalTok{classe, }\DataTypeTok{p=}\FloatTok{0.7}\NormalTok{, }\DataTypeTok{times =} \DecValTok{1}\NormalTok{, }\DataTypeTok{list =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+~
+
+We use the result of the \textbf{createDataPartition} function call to
+define the training and test sets like this:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train <-}\StringTok{ }\NormalTok{train_data[train_index,]}
+\NormalTok{test <-}\StringTok{ }\NormalTok{train_data[}\OperatorTok{-}\NormalTok{train_index,]}
+\end{Highlighting}
+\end{Shaded}
+
+~
+
+\hypertarget{describing-data}{%
+\subsection{Describing Data}\label{describing-data}}
+
+First, we make a check if our data format is indeed \textbf{data frame}:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Check format}
+\KeywordTok{class}\NormalTok{(train)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "data.frame"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{(test)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "data.frame"
+\end{verbatim}
+
+~
+
+Now let's take a look in our data. We start by finding out more about
+the structure of our \textbf{edx}:
+
+~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{as_tibble}\NormalTok{(train) }\OperatorTok{%>%}
+\KeywordTok{slice}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{) }\OperatorTok{%>%}
+\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}{r|l|r|r|l|l|r|r|r|r|r|r|r|l|r|r|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|l|r|r|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|l|r|r|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|l}
+\hline
+X & user\_name & raw\_timestamp\_part\_1 & raw\_timestamp\_part\_2 & cvtd\_timestamp & new\_window & num\_window & roll\_belt & pitch\_belt & yaw\_belt & total\_accel\_belt & kurtosis\_roll\_belt & kurtosis\_picth\_belt & kurtosis\_yaw\_belt & skewness\_roll\_belt & skewness\_roll\_belt.1 & skewness\_yaw\_belt & max\_roll\_belt & max\_picth\_belt & max\_yaw\_belt & min\_roll\_belt & min\_pitch\_belt & min\_yaw\_belt & amplitude\_roll\_belt & amplitude\_pitch\_belt & amplitude\_yaw\_belt & var\_total\_accel\_belt & avg\_roll\_belt & stddev\_roll\_belt & var\_roll\_belt & avg\_pitch\_belt & stddev\_pitch\_belt & var\_pitch\_belt & avg\_yaw\_belt & stddev\_yaw\_belt & var\_yaw\_belt & gyros\_belt\_x & gyros\_belt\_y & gyros\_belt\_z & accel\_belt\_x & accel\_belt\_y & accel\_belt\_z & magnet\_belt\_x & magnet\_belt\_y & magnet\_belt\_z & roll\_arm & pitch\_arm & yaw\_arm & total\_accel\_arm & var\_accel\_arm & avg\_roll\_arm & stddev\_roll\_arm & var\_roll\_arm & avg\_pitch\_arm & stddev\_pitch\_arm & var\_pitch\_arm & avg\_yaw\_arm & stddev\_yaw\_arm & var\_yaw\_arm & gyros\_arm\_x & gyros\_arm\_y & gyros\_arm\_z & accel\_arm\_x & accel\_arm\_y & accel\_arm\_z & magnet\_arm\_x & magnet\_arm\_y & magnet\_arm\_z & kurtosis\_roll\_arm & kurtosis\_picth\_arm & kurtosis\_yaw\_arm & skewness\_roll\_arm & skewness\_pitch\_arm & skewness\_yaw\_arm & max\_roll\_arm & max\_picth\_arm & max\_yaw\_arm & min\_roll\_arm & min\_pitch\_arm & min\_yaw\_arm & amplitude\_roll\_arm & amplitude\_pitch\_arm & amplitude\_yaw\_arm & roll\_dumbbell & pitch\_dumbbell & yaw\_dumbbell & kurtosis\_roll\_dumbbell & kurtosis\_picth\_dumbbell & kurtosis\_yaw\_dumbbell & skewness\_roll\_dumbbell & skewness\_pitch\_dumbbell & skewness\_yaw\_dumbbell & max\_roll\_dumbbell & max\_picth\_dumbbell & max\_yaw\_dumbbell & min\_roll\_dumbbell & min\_pitch\_dumbbell & min\_yaw\_dumbbell & amplitude\_roll\_dumbbell & amplitude\_pitch\_dumbbell & amplitude\_yaw\_dumbbell & total\_accel\_dumbbell & var\_accel\_dumbbell & avg\_roll\_dumbbell & stddev\_roll\_dumbbell & var\_roll\_dumbbell & avg\_pitch\_dumbbell & stddev\_pitch\_dumbbell & var\_pitch\_dumbbell & avg\_yaw\_dumbbell & stddev\_yaw\_dumbbell & var\_yaw\_dumbbell & gyros\_dumbbell\_x & gyros\_dumbbell\_y & gyros\_dumbbell\_z & accel\_dumbbell\_x & accel\_dumbbell\_y & accel\_dumbbell\_z & magnet\_dumbbell\_x & magnet\_dumbbell\_y & magnet\_dumbbell\_z & roll\_forearm & pitch\_forearm & yaw\_forearm & kurtosis\_roll\_forearm & kurtosis\_picth\_forearm & kurtosis\_yaw\_forearm & skewness\_roll\_forearm & skewness\_pitch\_forearm & skewness\_yaw\_forearm & max\_roll\_forearm & max\_picth\_forearm & max\_yaw\_forearm & min\_roll\_forearm & min\_pitch\_forearm & min\_yaw\_forearm & amplitude\_roll\_forearm & amplitude\_pitch\_forearm & amplitude\_yaw\_forearm & total\_accel\_forearm & var\_accel\_forearm & avg\_roll\_forearm & stddev\_roll\_forearm & var\_roll\_forearm & avg\_pitch\_forearm & stddev\_pitch\_forearm & var\_pitch\_forearm & avg\_yaw\_forearm & stddev\_yaw\_forearm & var\_yaw\_forearm & gyros\_forearm\_x & gyros\_forearm\_y & gyros\_forearm\_z & accel\_forearm\_x & accel\_forearm\_y & accel\_forearm\_z & magnet\_forearm\_x & magnet\_forearm\_y & magnet\_forearm\_z & classe\\
+\hline
+2 & carlitos & 1323084231 & 808298 & 05/12/2011 11:23 & no & 11 & 1.41 & 8.07 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.00 & -0.02 & -22 & 4 & 22 & -7 & 608 & -311 & -128 & 22.5 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & -0.02 & -0.02 & -290 & 110 & -125 & -369 & 337 & 513 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.13074 & -70.63751 & -84.71065 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & 0.00 & -233 & 47 & -269 & -555 & 296 & -64 & 28.3 & -63.9 & -153 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.00 & -0.02 & 192 & 203 & -216 & -18 & 661 & 473 & A\\
+\hline
+3 & carlitos & 1323084231 & 820366 & 05/12/2011 11:23 & no & 11 & 1.42 & 8.07 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & 0.00 & -0.02 & -20 & 5 & 23 & -2 & 600 & -305 & -128 & 22.5 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & -0.02 & -0.02 & -289 & 110 & -126 & -368 & 344 & 513 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 12.85075 & -70.27812 & -85.14078 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & 0.00 & -232 & 46 & -270 & -561 & 298 & -63 & 28.3 & -63.9 & -152 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.03 & -0.02 & 0.00 & 196 & 204 & -213 & -18 & 658 & 469 & A\\
+\hline
+4 & carlitos & 1323084232 & 120339 & 05/12/2011 11:23 & no & 12 & 1.48 & 8.05 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.00 & -0.03 & -22 & 3 & 21 & -6 & 604 & -310 & -128 & 22.1 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & -0.03 & 0.02 & -289 & 111 & -123 & -372 & 344 & 512 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.43120 & -70.39379 & -84.87363 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & -0.02 & -232 & 48 & -269 & -552 & 303 & -60 & 28.1 & -63.9 & -152 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & -0.02 & 0.00 & 189 & 206 & -214 & -16 & 658 & 469 & A\\
+\hline
+5 & carlitos & 1323084232 & 196328 & 05/12/2011 11:23 & no & 12 & 1.48 & 8.07 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.02 & -0.02 & -21 & 2 & 24 & -6 & 600 & -302 & -128 & 22.1 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & -0.03 & 0.00 & -289 & 111 & -123 & -374 & 337 & 506 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.37872 & -70.42856 & -84.85306 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & 0.00 & -233 & 48 & -270 & -554 & 292 & -68 & 28.0 & -63.9 & -152 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.00 & -0.02 & 189 & 206 & -214 & -17 & 655 & 473 & A\\
+\hline
+7 & carlitos & 1323084232 & 368296 & 05/12/2011 11:23 & no & 12 & 1.42 & 8.09 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.00 & -0.02 & -22 & 3 & 21 & -4 & 599 & -311 & -128 & 21.9 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & -0.03 & 0.00 & -289 & 111 & -125 & -373 & 336 & 509 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.12695 & -70.24757 & -85.09961 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & 0.00 & -232 & 47 & -270 & -551 & 295 & -70 & 27.9 & -63.9 & -152 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.00 & -0.02 & 195 & 205 & -215 & -18 & 659 & 470 & A\\
+\hline
+\end{tabular}
+
+~
+
+Now for \textbf{validation}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{as_tibble}\NormalTok{(test) }\OperatorTok{%>%}
+\KeywordTok{slice}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{) }\OperatorTok{%>%}
+\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}{r|l|r|r|l|l|r|r|r|r|r|r|r|l|r|r|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|l|r|r|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|l|r|r|l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|l}
+\hline
+X & user\_name & raw\_timestamp\_part\_1 & raw\_timestamp\_part\_2 & cvtd\_timestamp & new\_window & num\_window & roll\_belt & pitch\_belt & yaw\_belt & total\_accel\_belt & kurtosis\_roll\_belt & kurtosis\_picth\_belt & kurtosis\_yaw\_belt & skewness\_roll\_belt & skewness\_roll\_belt.1 & skewness\_yaw\_belt & max\_roll\_belt & max\_picth\_belt & max\_yaw\_belt & min\_roll\_belt & min\_pitch\_belt & min\_yaw\_belt & amplitude\_roll\_belt & amplitude\_pitch\_belt & amplitude\_yaw\_belt & var\_total\_accel\_belt & avg\_roll\_belt & stddev\_roll\_belt & var\_roll\_belt & avg\_pitch\_belt & stddev\_pitch\_belt & var\_pitch\_belt & avg\_yaw\_belt & stddev\_yaw\_belt & var\_yaw\_belt & gyros\_belt\_x & gyros\_belt\_y & gyros\_belt\_z & accel\_belt\_x & accel\_belt\_y & accel\_belt\_z & magnet\_belt\_x & magnet\_belt\_y & magnet\_belt\_z & roll\_arm & pitch\_arm & yaw\_arm & total\_accel\_arm & var\_accel\_arm & avg\_roll\_arm & stddev\_roll\_arm & var\_roll\_arm & avg\_pitch\_arm & stddev\_pitch\_arm & var\_pitch\_arm & avg\_yaw\_arm & stddev\_yaw\_arm & var\_yaw\_arm & gyros\_arm\_x & gyros\_arm\_y & gyros\_arm\_z & accel\_arm\_x & accel\_arm\_y & accel\_arm\_z & magnet\_arm\_x & magnet\_arm\_y & magnet\_arm\_z & kurtosis\_roll\_arm & kurtosis\_picth\_arm & kurtosis\_yaw\_arm & skewness\_roll\_arm & skewness\_pitch\_arm & skewness\_yaw\_arm & max\_roll\_arm & max\_picth\_arm & max\_yaw\_arm & min\_roll\_arm & min\_pitch\_arm & min\_yaw\_arm & amplitude\_roll\_arm & amplitude\_pitch\_arm & amplitude\_yaw\_arm & roll\_dumbbell & pitch\_dumbbell & yaw\_dumbbell & kurtosis\_roll\_dumbbell & kurtosis\_picth\_dumbbell & kurtosis\_yaw\_dumbbell & skewness\_roll\_dumbbell & skewness\_pitch\_dumbbell & skewness\_yaw\_dumbbell & max\_roll\_dumbbell & max\_picth\_dumbbell & max\_yaw\_dumbbell & min\_roll\_dumbbell & min\_pitch\_dumbbell & min\_yaw\_dumbbell & amplitude\_roll\_dumbbell & amplitude\_pitch\_dumbbell & amplitude\_yaw\_dumbbell & total\_accel\_dumbbell & var\_accel\_dumbbell & avg\_roll\_dumbbell & stddev\_roll\_dumbbell & var\_roll\_dumbbell & avg\_pitch\_dumbbell & stddev\_pitch\_dumbbell & var\_pitch\_dumbbell & avg\_yaw\_dumbbell & stddev\_yaw\_dumbbell & var\_yaw\_dumbbell & gyros\_dumbbell\_x & gyros\_dumbbell\_y & gyros\_dumbbell\_z & accel\_dumbbell\_x & accel\_dumbbell\_y & accel\_dumbbell\_z & magnet\_dumbbell\_x & magnet\_dumbbell\_y & magnet\_dumbbell\_z & roll\_forearm & pitch\_forearm & yaw\_forearm & kurtosis\_roll\_forearm & kurtosis\_picth\_forearm & kurtosis\_yaw\_forearm & skewness\_roll\_forearm & skewness\_pitch\_forearm & skewness\_yaw\_forearm & max\_roll\_forearm & max\_picth\_forearm & max\_yaw\_forearm & min\_roll\_forearm & min\_pitch\_forearm & min\_yaw\_forearm & amplitude\_roll\_forearm & amplitude\_pitch\_forearm & amplitude\_yaw\_forearm & total\_accel\_forearm & var\_accel\_forearm & avg\_roll\_forearm & stddev\_roll\_forearm & var\_roll\_forearm & avg\_pitch\_forearm & stddev\_pitch\_forearm & var\_pitch\_forearm & avg\_yaw\_forearm & stddev\_yaw\_forearm & var\_yaw\_forearm & gyros\_forearm\_x & gyros\_forearm\_y & gyros\_forearm\_z & accel\_forearm\_x & accel\_forearm\_y & accel\_forearm\_z & magnet\_forearm\_x & magnet\_forearm\_y & magnet\_forearm\_z & classe\\
+\hline
+1 & carlitos & 1323084231 & 788290 & 05/12/2011 11:23 & no & 11 & 1.41 & 8.07 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & 0 & -0.02 & -21 & 4 & 22 & -3 & 599 & -313 & -128 & 22.5 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & 0.00 & -0.02 & -288 & 109 & -123 & -368 & 337 & 516 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.05217 & -70.49400 & -84.87394 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & 0.00 & -234 & 47 & -271 & -559 & 293 & -65 & 28.4 & -63.9 & -153 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.03 & 0.00 & -0.02 & 192 & 203 & -215 & -17 & 654 & 476 & A\\
+\hline
+6 & carlitos & 1323084232 & 304277 & 05/12/2011 11:23 & no & 12 & 1.45 & 8.06 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0 & -0.02 & -21 & 4 & 21 & 0 & 603 & -312 & -128 & 22.0 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & -0.03 & 0.00 & -289 & 111 & -122 & -369 & 342 & 513 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.38246 & -70.81759 & -84.46500 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & 0.00 & -234 & 48 & -269 & -558 & 294 & -66 & 27.9 & -63.9 & -152 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & -0.02 & -0.03 & 193 & 203 & -215 & -9 & 660 & 478 & A\\
+\hline
+13 & carlitos & 1323084232 & 560359 & 05/12/2011 11:23 & no & 12 & 1.42 & 8.20 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0 & 0.00 & -22 & 4 & 21 & -3 & 606 & -309 & -128 & 21.4 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & -0.02 & -0.02 & -287 & 111 & -124 & -372 & 338 & 509 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.38246 & -70.81759 & -84.46500 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & -0.02 & -234 & 48 & -269 & -552 & 302 & -69 & 27.2 & -63.9 & -151 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & 0.00 & -0.03 & 193 & 205 & -215 & -15 & 655 & 472 & A\\
+\hline
+15 & carlitos & 1323084232 & 604281 & 05/12/2011 11:23 & no & 12 & 1.45 & 8.20 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & 0 & 0.00 & -21 & 2 & 22 & -1 & 597 & -310 & -129 & 21.4 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.00 & -0.03 & -289 & 111 & -124 & -374 & 342 & 510 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.07949 & -70.67116 & -84.69053 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & 0.00 & -234 & 47 & -270 & -554 & 294 & -63 & 27.2 & -63.9 & -151 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & -0.02 & -0.02 & 192 & 201 & -214 & -16 & 656 & 472 & A\\
+\hline
+17 & carlitos & 1323084232 & 692324 & 05/12/2011 11:23 & no & 12 & 1.51 & 8.12 & -94.4 & 3 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.00 & 0 & -0.02 & -21 & 4 & 22 & -6 & 598 & -317 & -129 & 21.3 & -161 & 34 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & 0.00 & -0.02 & -289 & 110 & -122 & -371 & 337 & 512 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 13.04835 & -70.10639 & -85.26058 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 37 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0 & -0.02 & 0.00 & -233 & 47 & -272 & -551 & 296 & -56 & 27.1 & -64.0 & -151 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 36 & NA & NA & NA & NA & NA & NA & NA & NA & NA & NA & 0.02 & -0.02 & 0.00 & 192 & 204 & -213 & -13 & 653 & 481 & A\\
+\hline
+\end{tabular}
+
+~
+
+We see that \textbf{train} data frame has 13737 rows and 160 variables,
+while \textbf{test} data frame has 5885 rows and 160.
+
+~
+
+\hypertarget{data-cleaning}{%
+\subsection{Data Cleaning}\label{data-cleaning}}
+
+We will clean data from:
+
+\begin{itemize}
+\tightlist
+\item
+  Variables that are not fit to be predictors (near zero variance)
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# remove variables with variance nearly zero}
+\NormalTok{nzv_index <-}\StringTok{ }\KeywordTok{nearZeroVar}\NormalTok{(train)}
+\CommentTok{# apply index to clean}
+\CommentTok{# for train data}
+\NormalTok{train <-}\StringTok{ }\NormalTok{train[, }\OperatorTok{-}\NormalTok{nzv_index]}
+\CommentTok{# for test data}
+\NormalTok{test  <-}\StringTok{ }\NormalTok{test[, }\OperatorTok{-}\NormalTok{nzv_index]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  Variables that are mostly missing values \(( > 75 \%)\)
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# remove variables with more than 75% NA}
+\NormalTok{na_index <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(train, }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{mean}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(x))) }\OperatorTok{>}\StringTok{ }\FloatTok{0.75}
+\NormalTok{train <-}\StringTok{ }\NormalTok{train[, na_index }\OperatorTok{==}\OtherTok{FALSE}\NormalTok{]}
+\NormalTok{test  <-}\StringTok{ }\NormalTok{test[, na_index }\OperatorTok{==}\OtherTok{FALSE}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  Variables from \(1: 5\) that serve as identificator
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# remove identificators}
+\NormalTok{train <-}\StringTok{ }\NormalTok{train[, }\OperatorTok{-}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{)]}
+\NormalTok{test  <-}\StringTok{ }\NormalTok{test[, }\OperatorTok{-}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+Finally let's check dimensions of our cleaned dataframes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# train data dim}
+\KeywordTok{dim}\NormalTok{(train)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 13737    54
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# test data  dim}
+\KeywordTok{dim}\NormalTok{(test)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 5885   54
+\end{verbatim}
+
+\hypertarget{building-models}{%
+\subsection{Building models}\label{building-models}}
+
+We will use \textbf{Random Forest} algorithm as a good choice for this
+case. \#\#\# Random Forest Algorithm
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Random Forest Algorithm}
+\CommentTok{# Model fitting for train data}
+\NormalTok{rf_model <-}\StringTok{ }\KeywordTok{randomForest}\NormalTok{(classe }\OperatorTok{~}\NormalTok{., }\DataTypeTok{data=}\NormalTok{train, }\DataTypeTok{method=}\StringTok{"class"}\NormalTok{)}
+\CommentTok{# Print model}
+\KeywordTok{print}\NormalTok{(rf_model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Call:
+ randomForest(formula = classe ~ ., data = train, method = "class") 
+               Type of random forest: classification
+                     Number of trees: 500
+No. of variables tried at each split: 7
+
+        OOB estimate of  error rate: 0.3%
+Confusion matrix:
+     A    B    C    D    E  class.error
+A 3905    1    0    0    0 0.0002560164
+B    6 2649    3    0    0 0.0033860045
+C    0   10 2385    1    0 0.0045909850
+D    0    0   17 2235    0 0.0075488455
+E    0    0    0    3 2522 0.0011881188
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Predicting on test data}
+\NormalTok{rf_pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(rf_model, test, }\DataTypeTok{Type=}\StringTok{"class"}\NormalTok{)}
+\CommentTok{# Print prediction}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(rf_pred))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+ 1  6 13 15 17 18 
+ A  A  A  A  A  A 
+Levels: A B C D E
+\end{verbatim}
+
+Now let's plot \textbf{Confusion Matrix} to check the accuracy of model
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Confussion Matrix}
+\KeywordTok{confusionMatrix}\NormalTok{(rf_pred, test}\OperatorTok{$}\NormalTok{classe)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Confusion Matrix and Statistics
+
+          Reference
+Prediction    A    B    C    D    E
+         A 1674    1    0    0    0
+         B    0 1138    4    0    0
+         C    0    0 1022    4    0
+         D    0    0    0  959    1
+         E    0    0    0    1 1081
+
+Overall Statistics
+                                          
+               Accuracy : 0.9981          
+                 95% CI : (0.9967, 0.9991)
+    No Information Rate : 0.2845          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.9976          
+                                          
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: A Class: B Class: C Class: D Class: E
+Sensitivity            1.0000   0.9991   0.9961   0.9948   0.9991
+Specificity            0.9998   0.9992   0.9992   0.9998   0.9998
+Pos Pred Value         0.9994   0.9965   0.9961   0.9990   0.9991
+Neg Pred Value         1.0000   0.9998   0.9992   0.9990   0.9998
+Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
+Detection Rate         0.2845   0.1934   0.1737   0.1630   0.1837
+Detection Prevalence   0.2846   0.1941   0.1743   0.1631   0.1839
+Balanced Accuracy      0.9999   0.9991   0.9976   0.9973   0.9994
+\end{verbatim}
+
+Let's emphasize our needed information
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Print needed information}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{confusionMatrix}\NormalTok{(rf_pred, test}\OperatorTok{$}\NormalTok{classe)}\OperatorTok{$}\NormalTok{overall[}\StringTok{'Accuracy'}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+ Accuracy 
+0.9981308 
+\end{verbatim}
+
+From the \textbf{Confusion Matrix} we see that model accuracy of the
+model is very high \(99.81 \%\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Print error matrix}
+\NormalTok{error_mat <-}\StringTok{ }\NormalTok{rf_model}\OperatorTok{$}\NormalTok{err.rate}
+\KeywordTok{head}\NormalTok{(error_mat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+            OOB          A          B          C          D          E
+[1,] 0.06752221 0.03742204 0.10243408 0.07718894 0.07500000 0.06142241
+[2,] 0.08748481 0.04995693 0.10696517 0.10231254 0.11489993 0.08595801
+[3,] 0.08322751 0.04415316 0.10865191 0.10038824 0.11051693 0.07564378
+[4,] 0.06999481 0.03258222 0.08961213 0.08074840 0.09656992 0.07315914
+[5,] 0.06358709 0.02884066 0.07981613 0.08005553 0.09064039 0.06021978
+[6,] 0.05574994 0.02370452 0.07263242 0.07218778 0.07594340 0.05332205
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Error rate}
+\NormalTok{error_rate <-}\StringTok{ }\NormalTok{error_mat [}\KeywordTok{nrow}\NormalTok{(error_mat), }\StringTok{"OOB"}\NormalTok{]}
+\KeywordTok{print}\NormalTok{(error_rate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+       OOB 
+0.00298464 
+\end{verbatim}
+
+Now let's finally use our prediction model to predict 20 different test
+cases.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Use model on 20 cases}
+\NormalTok{small_pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(rf_model, }\DataTypeTok{newdata =}\NormalTok{ test_data, }\DataTypeTok{Type=}\StringTok{"class"}\NormalTok{)}
+\NormalTok{small_pred}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+ B  A  B  A  A  E  D  B  A  A  B  C  B  A  E  E  A  B  B  B 
+Levels: A B C D E
+\end{verbatim}
+
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
+
+We created for our data a predicting model using Random Forest
+Algorithm. The accuracy of our model is is very high \(99.81 \%\) and
+error rate is \texttt{\{r,\ error\_rate\}}
+
+\end{document}
