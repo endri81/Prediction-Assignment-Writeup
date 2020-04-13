@@ -1,0 +1,294 @@
+---
+title: "Prediction Assignment Writeup"
+author: "Endri Raco"
+documentclass: article
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+  pdf_document:
+    df_print: kable
+    toc: yes
+fig_width: 5
+fontsize: 10pt
+highlight: zenburn
+latex_engine: xelatex
+mainfont: Arial
+mathfont: LiberationMono
+monofont: DejaVu Sans Mono
+fig_height: 5
+classoption: a4paper
+---
+
+  
+```{r setup, include=FALSE, echo=FALSE,warning=FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  verbose=TRUE,
+  root.dir=normalizePath('../'),
+  fig.path ='../figures/',
+  comment = NA,
+  warning=FALSE,
+  message=FALSE,
+  fig.align='center',
+  fig.lp = '',
+  fig.keep='high',
+  fig.show='hold',
+  echo=TRUE, 
+  tidy.opts=list(width.cutoff=60),
+  tidy = FALSE, 
+  dev='pdf')
+```
+
+```{r wrap-hook, echo=FALSE}
+# Function to make output fit on page
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+```
+
+## Executive Summary
+
+&nbsp;
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+Project aims to quantify how well participants do particular activities. We will use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. This is the “classe” variable in the training set. 
+
+
+```{r pc}
+print("Operating System:")
+version
+```
+
+&nbsp;
+
+## Importing data
+
+&nbsp;
+
+Let's start by checking if needed R packages for this project are installed. If not, code below will install them. 
+
+&nbsp;
+
+```{r required_packages}
+# required packages for our project
+if(!require(kableExtra)) install.packages('kableExtra', 
+repos = 'http://cran.us.r-project.org')
+if(!require(tidyverse)) install.packages('tidyverse', 
+repos = 'http://cran.us.r-project.org')
+if(!require(caret)) install.packages('caret', 
+repos = 'http://cran.us.r-project.org')
+if(!require(corrplot)) install.packages('corrplot', 
+repos = 'http://cran.us.r-project.org')
+if(!require(randomForest)) install.packages('randomForest', 
+repos = 'http://cran.us.r-project.org')
+```
+
+&nbsp;
+
+Now we are ready for data downloading:
+
+&nbsp;
+
+```{r data_download, eval=TRUE, cache=TRUE}
+# Links saved in objects:
+train_link <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+test_link <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+```
+
+&nbsp;
+
+Now let's load our working data
+
+```{r arrange_data, eval=TRUE, cache=TRUE}
+# Load data
+train_data <- read.csv(url(train_link),  na.strings=c("NA","#DIV/0!",""))
+test_data  <- read.csv(url(test_link),  na.strings=c("NA","#DIV/0!",""))
+```
+
+&nbsp;
+
+## Split data
+
+When developing an algorithm, we usually have a dataset for which we know the outcomes.
+Therefore, to mimic the ultimate evaluation process, we typically split the data into two parts and act as if we don’t know the outcome for one of these. 
+
+We stop pretending we don’t know the outcome to evaluate the algorithm, but only after we are done constructing it. We refer to the group for which we know the outcome, and use to develop the algorithm, as the training set. 
+
+We refer to the group for which we pretend we don’t know the outcome as the test set. 
+
+A standard way of generating the training and test sets is by randomly splitting the data. The caret package includes the function **createDataPartition** that helps us generates indexes for randomly splitting the data into training and test sets:
+
+&nbsp;
+
+```{r data-partititon, eval=TRUE, cache=TRUE}
+# Generate indexes for randomly splitting data
+# Validation set will be 30% of train_data
+set.seed(1, sample.kind='Rounding')
+train_index  <- createDataPartition(y = train_data$classe, p=0.7, times = 1, list = FALSE)
+```
+
+&nbsp;
+
+We use the result of the **createDataPartition** function call to define the training and test sets like this:
+
+&nbsp;
+
+```{r data-partititon2, eval = TRUE,cache=TRUE}
+train <- train_data[train_index,]
+test <- train_data[-train_index,]
+```
+
+
+&nbsp;
+
+## Describing Data
+
+First, we make a check if our data format is indeed **data frame**:
+  
+  &nbsp;
+
+```{r data-format, eval=TRUE}
+# Check format
+class(train)
+class(test)
+```
+
+&nbsp;
+
+Now let's take a look in our data. We start by finding out more about the structure of our **edx**:
+
+&nbsp;
+
+```{r data-str-train,eval=TRUE, linewidth=60, cache=TRUE}
+as_tibble(train) %>%
+slice(1:5) %>%
+knitr::kable()
+```
+
+
+&nbsp;
+
+Now for **validation**:
+
+```{r data-str-test,eval=TRUE, linewidth=60, cache=TRUE}
+as_tibble(test) %>%
+slice(1:5) %>%
+knitr::kable()
+```
+
+&nbsp;
+
+We see that **train** data frame has `r nrow(train)` rows and `r ncol(train)`
+variables, while **test** data frame has `r nrow(test)` rows and `r ncol(test)`.
+
+&nbsp;
+
+## Data Cleaning
+
+We will clean data from:
+
+  - Variables that are not fit to be predictors (near zero variance)
+
+```{r, clean -nzv}
+# remove variables with variance nearly zero
+nzv_index <- nearZeroVar(train)
+# apply index to clean
+# for train data
+train <- train[, -nzv_index]
+# for test data
+test  <- test[, -nzv_index]
+```
+
+  - Variables that are mostly missing values $( > 75 \%)$
+
+```{r, clean-na}
+# remove variables with more than 75% NA
+na_index <- sapply(train, function(x) mean(is.na(x))) > 0.75
+train <- train[, na_index ==FALSE]
+test  <- test[, na_index ==FALSE]
+```
+
+  - Variables from $1: 5$ that serve as identificator
+
+```{r, clean-ident}
+# remove identificators
+train <- train[, -(1:5)]
+test  <- test[, -(1:5)]
+```    
+    
+Finally let's check dimensions of our cleaned dataframes.
+
+```{r, check-dim}
+# train data dim
+dim(train)
+# test data  dim
+dim(test)
+``` 
+
+
+## Building models
+
+We will use **Random Forest** algorithm as a good choice for this case. 
+### Random Forest Algorithm
+
+```{r, rf-alg}
+# Random Forest Algorithm
+# Model fitting for train data
+rf_model <- randomForest(classe ~., data=train, method="class")
+# Print model
+print(rf_model)
+# Predicting on test data
+rf_pred <- predict(rf_model, test, Type="class")
+# Print prediction
+print(head(rf_pred))
+```
+
+Now let's plot **Confusion Matrix** to check the accuracy of model
+
+```{r, conf-mat}
+# Confussion Matrix
+confusionMatrix(rf_pred, test$classe)
+```
+Let's emphasize our needed information
+
+```{r, accuracy}
+# Print needed information
+print(confusionMatrix(rf_pred, test$classe)$overall['Accuracy'])
+```
+
+From the **Confusion Matrix** we see that model accuracy of the model is very high $99.81 \%$.
+
+```{r, error}
+# Print error matrix
+error_mat <- rf_model$err.rate
+head(error_mat)
+# Error rate
+error_rate <- error_mat [nrow(error_mat), "OOB"]
+print(error_rate)
+```
+
+Now let's finally use our prediction model to predict 20 different test cases. 
+
+```{r, test-cases}
+# Use model on 20 cases
+small_pred <- predict(rf_model, newdata = test_data, Type="class")
+small_pred
+```
+
+## Results
+
+We created for our data a predicting model using Random Forest Algorithm. The accuracy of our model is is very high $99.81 \%$ and error rate is `{r, error_rate}`
+
+
+
+
